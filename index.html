@@ -137,8 +137,13 @@ $('convert').onclick=async()=>{if(busy)return;busy=true;renderFiles();outputs=[]
 
 // 첫 화면의 HTML을 실행 시점에 보관하므로 파일 업로드·편집 데이터가 다운로드 파일에 포함되지 않습니다.
 // GitHub Pages(HTTPS)와 로컬 file:// 양쪽에서 동일하게 실행됩니다.
-const cleanStandaloneHtml='<!doctype html>\n'+document.documentElement.outerHTML;
-$('appDownload').onclick=()=>{
+// 다운로드용 문서에서는 배포 전용 버튼을 제거합니다.
+// 복제본을 사용하므로 현재 GitHub Pages의 버튼은 그대로 유지됩니다.
+const standaloneDocument = document.documentElement.cloneNode(true);
+standaloneDocument.querySelector('#appDownload')?.remove();
+const cleanStandaloneHtml='<!doctype html\n'+standaloneDocument.outerHTML;
+const appDownloadButton = $('appDownload');
+if (appDownloadButton) appDownloadButton.onclick=()=>{
   download(new Blob([cleanStandaloneHtml],{type:'text/html;charset=utf-8'}),'MarkdownStudio_문서변환기.html');
 };
 })();
